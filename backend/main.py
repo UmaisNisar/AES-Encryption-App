@@ -8,7 +8,8 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import os
 import base64
 import time
-from typing import Optional
+from typing import Optional, List, Dict, Any
+from aes_visualizer import visualize_aes_encryption
 
 app = FastAPI(title="AES Encryption/Decryption API")
 
@@ -232,6 +233,41 @@ async def decrypt_data(request: DecryptionRequest):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Decryption error: {str(e)}")
+
+class VisualizationRequest(BaseModel):
+    plaintext: str = Field(..., description="Text to visualize encryption")
+    key: str = Field(..., description="AES key (base64 encoded or hex)")
+    key_size: int = Field(128, description="Key size in bits (128, 192, or 256)")
+
+class VisualizationResponse(BaseModel):
+    steps: List[Dict[str, Any]]
+    total_rounds: int
+    key_size: int
+
+@app.post("/visualize", response_model=VisualizationResponse)
+async def visualize_aes(request: VisualizationRequest):
+    """Visualize AES encryption step-by-step"""
+    try:
+        # Validate key size
+        if request.key_size not in [128, 192, 256]:
+            raise HTTPException(status_code=400, detail="Key size must be 128, 192, or 256 bits")
+        
+        # Decode key
+        key = decode_key(request.key, request.key_size)
+        
+        # Generate visualization steps
+        steps = visualize_aes_encryption(request.plaintext, key, request.key_size)
+        
+        num_rounds = {128: 10, 192: 12, 256: 14}[request.key_size]
+        
+        return VisualizationResponse(
+            steps=steps,
+            total_rounds=num_rounds,
+            key_size=request.key_size
+        )
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Visualization error: {str(e)}")
 
 @app.get("/")
 async def root():

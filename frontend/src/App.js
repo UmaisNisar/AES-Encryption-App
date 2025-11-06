@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import AESVisualization from './AESVisualization';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -17,6 +18,8 @@ function App() {
   const [decryptionTime, setDecryptionTime] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [visualizationSteps, setVisualizationSteps] = useState(null);
+  const [showVisualization, setShowVisualization] = useState(false);
 
   useEffect(() => {
     // Apply dark mode to document
@@ -109,6 +112,38 @@ function App() {
         setError(`❌ Decryption failed: ${err.message}`);
       } else {
         setError('❌ Decryption failed. Please check the console for details.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVisualize = async () => {
+    if (!plaintext || !key) {
+      setError('Please enter plaintext and key to visualize');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/visualize`, {
+        plaintext,
+        key,
+        key_size: keySize,
+      });
+
+      setVisualizationSteps(response.data.steps);
+      setShowVisualization(true);
+    } catch (err) {
+      console.error('Visualization error:', err);
+      if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+        setError('❌ Cannot connect to backend server for visualization.');
+      } else if (err.response?.data?.detail) {
+        setError(`❌ ${err.response.data.detail}`);
+      } else {
+        setError('❌ Visualization failed. Please check the console for details.');
       }
     } finally {
       setLoading(false);
@@ -268,7 +303,7 @@ function App() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center gap-4 mb-6">
+        <div className="flex justify-center gap-4 mb-6 flex-wrap">
           <button
             onClick={handleEncrypt}
             disabled={loading || !plaintext || !key}
@@ -282,6 +317,13 @@ function App() {
             className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {loading ? '⏳ Decrypting...' : '🔓 Decrypt'}
+          </button>
+          <button
+            onClick={handleVisualize}
+            disabled={loading || !plaintext || !key}
+            className="px-8 py-4 bg-gradient-to-r from-cyan-600 via-green-600 to-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 animate-pulse"
+          >
+            {loading ? '⏳ Loading...' : '✨ Visualize AES'}
           </button>
         </div>
 
@@ -468,6 +510,16 @@ function App() {
             </div>
           </div>
         </footer>
+
+        {/* AES Visualization Modal */}
+        {showVisualization && visualizationSteps && (
+          <AESVisualization
+            steps={visualizationSteps}
+            onClose={() => setShowVisualization(false)}
+            isOpen={showVisualization}
+            autoPlay={false}
+          />
+        )}
       </div>
     </div>
   );
