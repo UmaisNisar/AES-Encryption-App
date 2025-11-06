@@ -60,9 +60,12 @@ Frontend will run on `http://localhost:3000`
 
 ## 🌐 Live Demo
 
-**Frontend**: [Coming Soon - Deploy to Vercel]  
-**Backend API**: [Coming Soon - Deploy to Render]  
+**Frontend**: [Deploying to Vercel...]  
+**Backend API**: [Deploying to Render...]  
 **API Docs**: [Coming Soon - /docs endpoint]
+
+---
+*Last updated: Deployment in progress*
 
 ## 👥 Group 2 Members
 
