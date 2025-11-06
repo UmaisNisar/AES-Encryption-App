@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Glassmorphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Neumorphism effect */
+.neomorphic {
+  background: #e0e0e0;
+  box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+}
+
+.dark .neomorphic {
+  background: #2d2d2d;
+  box-shadow: 20px 20px 60px #1a1a1a, -20px -20px 60px #404040;
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Glow effect for Group 2 footer card */
+.group:hover {
+  box-shadow: 0 20px 60px rgba(147, 51, 234, 0.3), 
+              0 0 40px rgba(59, 130, 246, 0.2) !important;
+}
+
+.dark .group:hover {
+  box-shadow: 0 20px 60px rgba(147, 51, 234, 0.5), 
+              0 0 40px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Enhanced member card hover glow */
+footer .bg-gradient-to-br:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dark footer .bg-gradient-to-br:hover {
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
+}
+
